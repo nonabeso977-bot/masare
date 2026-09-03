@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>اختبار HL ♡</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Cairo', sans-serif;
+    background: linear-gradient(135deg, #ffe6f1, #e8e0ff, #dff6ff);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: #4d4352;
+}
+
+.container {
+    width: 100%;
+    max-width: 700px;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 30px;
+    padding: 30px;
+    box-shadow: 0 15px 40px rgba(120, 100, 140, 0.15);
+}
+
+h1 {
+    text-align: center;
+    margin-top: 0;
+    color: #765b7a;
+}
+
+.subtitle {
+    text-align: center;
+    color: #8d7b91;
+    margin-bottom: 25px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #88778c;
+}
+
+.progress-bar {
+    height: 10px;
+    background: #eee5f0;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+#progress {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #dca9d6, #aeb9ee);
+    border-radius: 20px;
+    transition: width 0.3s ease;
+}
+
+#questionBox {
+    min-height: 180px;
+}
+
+.question {
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.8;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.options {
+    display: grid;
+    gap: 12px;
+}
+
+.option {
+    border: none;
+    background: #faf5fb;
+    border: 2px solid #eee3f0;
+    border-radius: 18px;
+    padding: 15px;
+    font-family: inherit;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+    color: #514756;
+}
+
+.option:hover {
+    transform: translateY(-2px);
+    background: #f4eafa;
+}
+
+.option.selected {
+    background: #e9def5;
+    border-color: #b797c4;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.buttons button {
+    flex: 1;
+    border: none;
+    padding: 13px;
+    border-radius: 16px;
+    font-family: inherit;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+#back {
+    background: #eee8f0;
+    color: #625666;
+}
+
+#next {
+    background: #c9b2dc;
+    color: white;
+}
+
+#next:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#result {
+    display: none;
+    text-align: center;
+}
+
+.result-title {
+    font-size: 27px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.result-description {
+    line-height: 1.9;
+    color: #6d6170;
+}
+
+.result-list {
+    margin-top: 25px;
+    text-align: right;
+}
+
+.result-item {
+    background: #faf6fb;
+    padding: 13px 16px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.note {
+    margin-top: 20px;
+    font-size: 12px;
+    color: #9b8fa0;
+    line-height: 1.7;
+}
+
+.restart {
+    margin-top: 20px;
+    width: 100%;
+    border: none;
+    background: #c9b2dc;
+    color: white;
+    padding: 14px;
+    border-radius: 16px;
+    font-family: inherit;
+    cursor: pointer;
+    font-size: 16px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card" id="quiz">
+
+    <h1>اختبار HL ♡</h1>
+
+    <div class="subtitle">
+        اختبار بسيط لمعرفة الشيء الذي تميلين له حاليًا
+    </div>
+
+    <div class="progress-info">
+        <span id="counter">السؤال 1 من 30</span>
+        <span id="percent">0%</span>
+    </div>
+
+    <div class="progress-bar">
+        <div id="progress"></div>
+    </div>
+
+    <div id="questionBox"></div>
+
+    <div class="buttons">
+        <button id="back" onclick="previousQuestion()">السابق</button>
+        <button id="next" onclick="nextQuestion()" disabled>التالي</button>
+    </div>
+
+</div>
+
+
+<div class="card" id="result">
+
+    <h1>النتيجة ♡</h1>
+
+    <div class="result-title" id="resultTitle"></div>
+
+    <div class="result-description" id="resultDescription"></div>
+
+    <div class="result-list" id="resultList"></div>
+
+    <div class="note">
+        هذا الاختبار للمتعة فقط، ولا يكشف مسار حياتك الحقيقي
+        ولا يستطيع التنبؤ بالمستقبل. البشر للأسف ما زالوا أعقد من 30 سؤالًا.
+    </div>
+
+    <button class="restart" onclick="restartQuiz()">
+        إعادة الاختبار
+    </button>
+
+</div>
+
+</div>
+
+
+<script>
+
+const types = {
+
+    creative: {
+        name: "صانع الأفكار 🎨",
+        description:
+        "تميلين للإبداع وصناعة الأشياء والأفكار. الرسم، الكتابة، التصميم، الاختراع، وتحويل الأفكار الغريبة إلى شيء حقيقي قد تكون من أكثر الأشياء التي تجذبك."
+    },
+
+    explore: {
+        name: "المستكشف 🔭",
+        description:
+        "تحبين التجربة واكتشاف الأشياء الجديدة. الروتين الطويل قد يخنقك، بينما الأماكن والأفكار والتجارب الجديدة تعطيك شعورًا بالحياة."
+    },
+
+    knowledge: {
+        name: "الباحث 🧠",
+        description:
+        "تحبين فهم الأشياء ومعرفة السبب وراءها. الفضول والتحليل والبحث والتعلم من الأشياء التي تجذب انتباهك."
+    },
+
+    freedom: {
+        name: "الحر 🪽",
+        description:
+        "الاستقلال مهم بالنسبة لك. تحبين اختيار طريقك بنفسك ولا ترتاحين عندما يقرر الآخرون عنك كيف يجب أن تعيشي."
+    },
+
+    stability: {
+        name: "صانع الاستقرار 🏡",
+        description:
+        "تميلين إلى التنظيم والأمان والتخطيط. وجود حياة متوازنة وواضحة ومستقرة قد يكون أكثر جاذبية لك من الفوضى المستمرة."
+    },
+
+    social: {
+        name: "الواصل 🤝",
+        description:
+        "التواصل والتعاون ومساعدة الآخرين من الأشياء المهمة بالنسبة لك. وجود أشخاص تشاركينهم الأفكار والتجارب يعطي للأشياء معنى أكبر."
+    }
+
+};
+
+
+const questions = [
+
+{
+    q: "تخيلي أنك دخلتِ مدينة مجهولة تمامًا. أول شيء ستفعلينه؟",
+    options: [
+        ["أبحث عن مكان آمن وأرتب يومي.", "stability"],
+        ["أمشي وأكتشف المدينة.", "explore"],
+        ["أحاول معرفة تاريخ المدينة وقصتها.", "knowledge"],
+        ["أبحث عن شخص أتحدث معه وأتعرف عليه.", "social"]
+    ]
+},
+
+{
+    q: "دخلتِ غرفة فارغة تمامًا، لكن مسموح لك بوضع أي شيء فيها. ماذا تفعلين؟",
+    options: [
+        ["أحولها إلى مكان فني مليء بأفكاري.", "creative"],
+        ["أجعلها غرفة مريحة ومنظمة.", "stability"],
+        ["أجعلها مكانًا للتجارب والمغامرات.", "explore"],
+        ["أجعلها مكانًا أجتمع فيه مع الناس.", "social"]
+    ]
+},
+
+{
+    q: "خطرت لك فكرة مشروع غريبة جدًا. ماذا تفعلين؟",
+    options: [
+        ["أبدأ بصنعها فورًا.", "creative"],
+        ["أبحث وأقرأ لأعرف هل يمكن تنفيذها.", "knowledge"],
+        ["أتركها وأبدأ شيئًا أكثر أمانًا.", "stability"],
+        ["أشاركها مع شخص وأناقشها معه.", "social"]
+    ]
+},
+
+{
+    q: "لو حصلتِ على أسبوع كامل بلا مسؤوليات، ماذا ستفعلين؟",
+    options: [
+        ["أتعلم شيئًا جديدًا.", "knowledge"],
+        ["أصنع مشروعًا أو أعمل على فكرة.", "creative"],
+        ["أذهب لاكتشاف أماكن جديدة.", "explore"],
+        ["أقضيه مع الأشخاص الذين أحبهم.", "social"]
+    ]
+},
+
+{
+    q: "وجدتِ بابًا مكتوبًا عليه: «لا تفتح». ماذا تفعلين؟",
+    options: [
+        ["أفتحه طبعًا وأشوف ما وراءه.", "explore"],
+        ["أبحث أولًا عن سبب المنع.", "knowledge"],
+        ["أتركه مغلقًا لأن القواعد موجودة لسبب.", "stability"],
+        ["أسأل شخصًا آخر عن الموضوع.", "social"]
+    ]
+},
+
+{
+    q: "فشلتِ في شيء كنتِ تريدينه. ما أول ردة فعل؟",
+    options: [
+        ["أجرب طريقة مختلفة.", "explore"],
+        ["أحلل سبب الفشل.", "knowledge"],
+        ["أقرر أنني أحتاج طريقًا يناسبني أكثر.", "freedom"],
+        ["أتحدث مع شخص أثق به.", "social"]
+    ]
+},
+
+{
+    q: "ما الشيء الذي يزعجك أكثر؟",
+    options: [
+        ["أن يفرض أحد عليّ ما أفعله.", "freedom"],
+        ["أن تكون الأمور بلا تفسير.", "knowledge"],
+        ["أن يمنعني أحد من الإبداع.", "creative"],
+        ["أن تكون حياتي فوضوية وغير مستقرة.", "stability"]
+    ]
+},
+
+{
+    q: "حصلتِ على مبلغ كبير من المال. ماذا تفعلين به؟",
+    options: [
+        ["أبدأ مشروعًا أو أصنع شيئًا.", "creative"],
+        ["أسافر وأجرب أشياء جديدة.", "explore"],
+        ["أستثمره في التعلم أو البحث.", "knowledge"],
+        ["أرتب حياتي وأضمن استقراري.", "stability"]
+    ]
+},
+
+{
+    q: "واجهتِ مشكلة معقدة جدًا. ماذا تفعلين؟",
+    options: [
+        ["أجرب حلولًا مختلفة.", "explore"],
+        ["أحللها خطوة بخطوة.", "knowledge"],
+        ["أبحث عن حل عملي ومستقر.", "stability"],
+        ["أطلب رأي شخص آخر.", "social"]
+    ]
+},
+
+{
+    q: "لو استطعتِ امتلاك قدرة واحدة، ماذا تختارين؟",
+    options: [
+        ["تحويل أفكاري إلى أشياء حقيقية.", "creative"],
+        ["استكشاف أي مكان في العالم.", "explore"],
+        ["معرفة إجابة أي سؤال.", "knowledge"],
+        ["العيش بحرية دون قيود.", "freedom"]
+    ]
+},
+
+{
+    q: "وجدتِ خريطة قديمة غامضة. ماذا تفعلين؟",
+    options: [
+        ["أتبعها وأرى أين تقودني.", "explore"],
+        ["أبحث عن أصلها ومعناها.", "knowledge"],
+        ["أحتفظ بها وأضعها في مكان آمن.", "stability"],
+        ["أعرضها على شخص وأناقشه فيها.", "social"]
+    ]
+},
+
+{
+    q: "وجدتِ صندوقًا لا يفتح إلا عندما تكونين مستعدة. ماذا تفعلين؟",
+    options: [
+        ["أحاول فتحه الآن.", "explore"],
+        ["أحاول معرفة طريقة عمله.", "knowledge"],
+        ["أنتظر حتى أكون مستعدة فعلًا.", "stability"],
+        ["أقرر بنفسي متى أفتحه ولا أسمح لأحد بتحديد ذلك.", "freedom"]
+    ]
+},
+
+{
+    q: "أمامك دفتر فارغ تمامًا. ماذا تفعلين به؟",
+    options: [
+        ["أرسم وأكتب أفكاري.", "creative"],
+        ["أستخدمه لتدوين معلومات وأبحاث.", "knowledge"],
+        ["أستخدمه لتنظيم حياتي وخططي.", "stability"],
+        ["أرسم وأكتب أي شيء يخطر في بالي.", "creative"]
+    ]
+},
+
+{
+    q: "أتيح لك تعلم مهارة جديدة مجانًا. ماذا تختارين؟",
+    options: [
+        ["مهارة فنية.", "creative"],
+        ["مهارة علمية أو معرفية.", "knowledge"],
+        ["مهارة تساعدني على بناء حياة مستقرة.", "stability"],
+        ["شيئًا لم أجربه من قبل.", "explore"]
+    ]
+},
+
+{
+    q: "قضيتِ يومًا كاملًا في مدينة جديدة. ما أكثر شيء يجذبك؟",
+    options: [
+        ["اكتشاف الشوارع والأماكن.", "explore"],
+        ["معرفة تاريخ وثقافة المدينة.", "knowledge"],
+        ["العثور على مكان هادئ ومريح.", "stability"],
+        ["التعرف على أشخاص جدد.", "social"]
+    ]
+},
+
+{
+    q: "اكتشفتِ أنك تملكين موهبة غير متوقعة. ماذا تفعلين؟",
+    options: [
+        ["أطورها وأصنع بها شيئًا.", "creative"],
+        ["أبحث عن أفضل طريقة لتطويرها.", "knowledge"],
+        ["أجرب استخدامها في أشياء مختلفة.", "explore"],
+        ["أشاركها مع الآخرين.", "social"]
+    ]
+},
+
+{
+    q: "دخلتِ مشروعًا جماعيًا. أي دور يناسبك؟",
+    options: [
+        ["ابتكار الأفكار.", "creative"],
+        ["البحث والتحليل.", "knowledge"],
+        ["تنظيم العمل.", "stability"],
+        ["التواصل بين أعضاء الفريق.", "social"]
+    ]
+},
+
+{
+    q: "أمامك خياران: حياة مستقرة تمامًا أو حياة مليئة بالمجهول. ماذا تختارين؟",
+    options: [
+        ["الحياة المستقرة.", "stability"],
+        ["الحياة المليئة بالمجهول.", "explore"],
+        ["حياة أقرر قواعدها بنفسي.", "freedom"],
+        ["حياة أقرر قواعدها بنفسي.", "freedom"]
+    ]
+},
+
+{
+    q: "قرأتِ معلومة غريبة جدًا على الإنترنت. ماذا تفعلين؟",
+    options: [
+        ["أبحث عن مصدرها وأتأكد منها.", "knowledge"],
+        ["أدخل في الموضوع وأكتشف المزيد.", "explore"],
+        ["أشاركها مع شخص وأناقشه فيها.", "social"],
+        ["أقرر بنفسي ماذا أصدق وماذا لا.", "freedom"]
+    ]
+},
+
+{
+    q: "لو طلب منك بناء شيء من الصفر، ماذا تفضلين؟",
+    options: [
+        ["عمل فني أو مشروع إبداعي.", "creative"],
+        ["شيء يعتمد على البحث والمعرفة.", "knowledge"],
+        ["شيء يسمح لي بالعمل بطريقتي.", "freedom"],
+        ["شيء يمكنني مشاركته مع الآخرين.", "social"]
+    ]
+},
+
+{
+    q: "لو واجهتِ مشكلة شخصية، ماذا تفعلين غالبًا؟",
+    options: [
+        ["أحاول حلها بطريقتي الخاصة.", "freedom"],
+        ["أحلل الموضوع وأفكر في أسبابه.", "knowledge"],
+        ["أتحدث مع شخص أثق به.", "social"],
+        ["أبحث عن حل يعيد الاستقرار.", "stability"]
+    ]
+},
+
+{
+    q: "لو اضطررتِ للبقاء في مكان واحد لمدة شهر، ماذا ستفعلين؟",
+    options: [
+        ["أستغل الوقت بطريقتي الخاصة.", "freedom"],
+        ["أكتشف كل شيء موجود في المكان.", "explore"],
+        ["أتعلم شيئًا جديدًا.", "knowledge"],
+        ["أقضي الوقت مع الناس الموجودين.", "social"]
+    ]
+},
+
+{
+    q: "أعطاك أحدهم حرية كاملة في تنفيذ مهمة. ماذا تفعلين؟",
+    options: [
+        ["أبتكر شيئًا مختلفًا.", "creative"],
+        ["أبحث عن أفضل طريقة لتنفيذها.", "knowledge"],
+        ["أضع خطة واضحة ومنظمة.", "stability"],
+        ["أتعاون مع شخص آخر.", "social"]
+    ]
+},
+
+{
+    q: "دخلتِ مختبرًا يسمح لك بإجراء تجارب غير خطيرة. ماذا تختارين؟",
+    options: [
+        ["أصنع شيئًا جديدًا.", "creative"],
+        ["أبحث وأجرب وأحلل النتائج.", "knowledge"],
+        ["أبحث وأحلل النتائج.", "knowledge"],
+        ["أجرب شيئًا لم أره من قبل.", "explore"]
+    ]
+},
+
+{
+    q: "شخص انتقد فكرة أنتِ متحمسة لها. كيف تتصرفين؟",
+    options: [
+        ["أحاول فهم هل انتقاده منطقي.", "knowledge"],
+        ["أقول إنني سأقرر بنفسي.", "freedom"],
+        ["أستخدم كلامه لتطوير الفكرة.", "creative"],
+        ["أبحث عن طريقة أكثر أمانًا لتنفيذها.", "stability"]
+    ]
+},
+
+{
+    q: "في فريق، أي دور يجذبك أكثر؟",
+    options: [
+        ["صاحبة الأفكار.", "creative"],
+        ["الباحثة.", "knowledge"],
+        ["المنظمة.", "stability"],
+        ["الشخص الذي يجمع الفريق.", "social"]
+    ]
+},
+
+{
+    q: "وجدتِ مكانًا جميلًا لكنه مجهول تمامًا. ماذا تفعلين؟",
+    options: [
+        ["أصور المكان وأستلهم منه أفكارًا.", "creative"],
+        ["أبحث عن معلومات عنه.", "knowledge"],
+        ["أقرر بنفسي هل أذهب إليه أم لا.", "freedom"],
+        ["أخبر شخصًا آخر وأدعوه معي.", "social"]
+    ]
+},
+
+{
+    q: "لو استطعتِ الحصول على إجابة واحدة فقط عن العالم، ماذا تختارين؟",
+    options: [
+        ["أريد معرفة حقيقة علمية ضخمة.", "knowledge"],
+        ["أريد معرفة شيء مجهول تمامًا.", "explore"],
+        ["أريد معرفة كيف أستطيع تشكيل حياتي كما أريد.", "freedom"],
+        ["أريد معرفة شيء يساعد البشر.", "social"]
+    ]
+},
+
+{
+    q: "بعد كل هذا العذاب، ما الشيء الذي تريدين التركيز عليه في حياتك حاليًا؟",
+    options: [
+        ["الإبداع وصناعة الأشياء.", "creative"],
+        ["التعلم وفهم الأشياء.", "knowledge"],
+        ["اكتشاف وتجربة أشياء جديدة.", "explore"],
+        ["الاستقلال واختيار طريقي.", "freedom"]
+    ]
+},
+
+{
+    q: "غدًا حصلتِ على فرصة تبدأين بها شيئًا جديدًا تمامًا. ماذا تختارين؟",
+    options: [
+        ["أبدأ مشروعًا أو فكرة إبداعية.", "creative"],
+        ["أدخل تجربة جديدة ومختلفة.", "explore"],
+        ["أتعلم شيئًا كنت دائمًا أريد فهمه.", "knowledge"],
+        ["أبدأ شيئًا أكون فيه مستقلة تمامًا.", "freedom"]
+    }
+
+];
+
+
+let currentQuestion = 0;
+let answers = new Array(questions.length).fill(null);
+
+
+function renderQuestion() {
+
+    const question = questions[currentQuestion];
+
+    const questionBox = document.getElementById("questionBox");
+
+    questionBox.innerHTML = "";
+
+    const questionElement = document.createElement("div");
+    questionElement.className = "question";
+    questionElement.textContent = question.q;
+
+    questionBox.appendChild(questionElement);
+
+    const optionsContainer = document.createElement("div");
+    optionsContainer.className = "options";
+
+    question.options.forEach((option, index) => {
+
+        const button = document.createElement("button");
+
+        button.className = "option";
+        button.textContent =
+            String.fromCharCode(65 + index) + " · " + option[0];
+
+        if (answers[currentQuestion] === index) {
+            button.classList.add("selected");
+        }
+
+        button.onclick = function () {
+            selectAnswer(index);
+        };
+
+        optionsContainer.appendChild(button);
+
+    });
+
+    questionBox.appendChild(optionsContainer);
+
+    document.getElementById("counter").textContent =
+        `السؤال ${currentQuestion + 1} من ${questions.length}`;
+
+    const percentage =
+        Math.round((currentQuestion / questions.length) * 100);
+
+    document.getElementById("percent").textContent =
+        percentage + "%";
+
+    document.getElementById("progress").style.width =
+        ((currentQuestion + 1) / questions.length * 100) + "%";
+
+    document.getElementById("back").disabled =
+        currentQuestion === 0;
+
+    document.getElementById("next").disabled =
+        answers[currentQuestion] === null;
+
+    document.getElementById("next").textContent =
+        currentQuestion === questions.length - 1
+        ? "عرض النتيجة"
+        : "التالي";
+}
+
+
+function selectAnswer(index) {
+
+    answers[currentQuestion] = index;
+
+    renderQuestion();
+}
+
+
+function previousQuestion() {
+
+    if (currentQuestion > 0) {
+        currentQuestion--;
+        renderQuestion();
+    }
+}
+
+
+function nextQuestion() {
+
+    if (answers[currentQuestion] === null) {
+        return;
+    }
+
+    if (currentQuestion < questions.length - 1) {
+
+        currentQuestion++;
+        renderQuestion();
+
+    } else {
+
+        showResult();
+
+    }
+}
+
+
+function showResult() {
+
+    const scores = {
+
+        creative: 0,
+        explore: 0,
+        knowledge: 0,
+        freedom: 0,
+        stability: 0,
+        social: 0
+
+    };
+
+
+    answers.forEach((answer, questionIndex) => {
+
+        if (answer !== null) {
+
+            const type =
+                questions[questionIndex].options[answer][1];
+
+            scores[type]++;
+
+        }
+
+    });
+
+
+    const sorted = Object.entries(scores)
+        .sort((a, b) => b[1] - a[1]);
+
+
+    const highestScore = sorted[0][1];
+
+    const winners = sorted
+        .filter(item => item[1] === highestScore)
+        .map(item => item[0]);
+
+
+    const winnerNames =
+        winners.map(type => types[type].name).join(" + ");
+
+
+    document.getElementById("quiz").style.display = "none";
+
+    document.getElementById("result").style.display = "block";
+
+    document.getElementById("resultTitle").textContent =
+        winnerNames;
+
+
+    document.getElementById("resultDescription").textContent =
+        types[winners[0]].description;
+
+
+    const resultList =
+        document.getElementById("resultList");
+
+    resultList.innerHTML = "";
+
+
+    sorted.forEach(([type, score]) => {
+
+        const percentage =
+            Math.round((score / questions.length) * 100);
+
+        const item =
+            document.createElement("div");
+
+        item.className = "result-item";
+
+        item.innerHTML = `
+            <span>${types[type].name}</span>
+            <strong>${percentage}%</strong>
+        `;
+
+        resultList.appendChild(item);
+
+    });
+
+}
+
+
+function restartQuiz() {
+
+    currentQuestion = 0;
+
+    answers =
+        new Array(questions.length).fill(null);
+
+    document.getElementById("result").style.display =
+        "none";
+
+    document.getElementById("quiz").style.display =
+        "block";
+
+    renderQuestion();
+
+}
+
+
+/* تشغيل السؤال الأول */
+renderQuestion();
+
+</script>
+
+</body>
+</html>
