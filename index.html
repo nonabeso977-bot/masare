@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>اختبار HL لتحديد تفضيلك الحالي</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Cairo", sans-serif;
+
+            background:
+                radial-gradient(circle at 10% 20%, rgba(255, 182, 193, 0.45), transparent 30%),
+                radial-gradient(circle at 90% 80%, rgba(190, 220, 255, 0.5), transparent 30%),
+                linear-gradient(135deg, #fff5f7, #f4f0ff, #eef8ff);
+
+            color: #555;
+            padding: 30px 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 720px;
+            margin: auto;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 15px 45px rgba(100, 80, 120, 0.12);
+            backdrop-filter: blur(10px);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .kaomoji {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            margin: 0;
+            color: #777;
+            font-size: 27px;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            margin-top: 8px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .note {
+            background: #fff8d9;
+            border: 1px solid #f1df8a;
+            border-radius: 18px;
+            padding: 15px;
+            line-height: 1.8;
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 25px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #eee8f5;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .progress {
+            height: 100%;
+            width: 0%;
+            border-radius: 20px;
+            background: linear-gradient(90deg, #ffc1d1, #cdbbff);
+            transition: width 0.3s ease;
+        }
+
+        #questionBox {
+            min-height: 300px;
+        }
+
+        .question {
+            text-align: center;
+            font-size: 21px;
+            font-weight: 700;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 22px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            width: 100%;
+            border: 2px solid #eee;
+            background: #fff;
+            border-radius: 18px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            text-align: right;
+            font-family: inherit;
+            font-size: 14px;
+            color: #666;
+            transition: 0.2s ease;
+        }
+
+        .option:hover {
+            transform: translateY(-2px);
+            border-color: #d8c9ff;
+            box-shadow: 0 6px 18px rgba(120, 100, 150, 0.08);
+        }
+
+        .option.selected {
+            border-color: #c9b5ff;
+            background: #f8f3ff;
+        }
+
+        .letter {
+            flex-shrink: 0;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1ebfa;
+            color: #8a7aa5;
+            font-weight: 800;
+        }
+
+        .option.selected .letter {
+            background: #d8c7ff;
+            color: white;
+        }
+
+        .navigation {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            border: none;
+            border-radius: 17px;
+            padding: 13px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .previous {
+            background: #eeeaf5;
+            color: #777;
+        }
+
+        .next {
+            background: linear-gradient(135deg, #ffc5d4, #cfc0ff);
+            color: white;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #result {
+            display: none;
+            text-align: center;
+        }
+
+        .result-emoji {
+            font-size: 55px;
+            margin-bottom: 5px;
+        }
+
+        .result h2 {
+            color: #777;
+            margin: 5px 0 10px;
+            font-size: 25px;
+        }
+
+        .result-description {
+            color: #888;
+            line-height: 1.9;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .scores {
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        .score-row {
+            margin-bottom: 15px;
+        }
+
+        .score-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 6px;
+        }
+
+        .score-bar {
+            height: 9px;
+            background: #eee;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 20px;
+            background: linear-gradient(90deg, #ffc5d4, #cfc0ff);
+            transition: width 0.7s ease;
+        }
+
+        .disclaimer {
+            background: #faf7ff;
+            border-radius: 17px;
+            padding: 14px;
+            color: #999;
+            font-size: 12px;
+            line-height: 1.8;
+            margin-top: 25px;
+        }
+
+        .restart {
+            width: 100%;
+            margin-top: 18px;
+            border: none;
+            border-radius: 17px;
+            padding: 14px;
+            background: #eeeaf5;
+            color: #777;
+            font-family: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .error {
+            text-align: center;
+            background: #fff0f0;
+            color: #b66;
+            border-radius: 18px;
+            padding: 20px;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px 10px;
+            }
+
+            .card {
+                padding: 20px 16px;
+                border-radius: 24px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .question {
+                font-size: 18px;
+            }
+
+            .option {
+                font-size: 13px;
+            }
+
+            .navigation {
+                flex-direction: column-reverse;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <header>
+            <div class="kaomoji">(⁠.⁠ ❛⁠ ᴗ⁠ ❛⁠.⁠) ♡</div>
+
+            <h1>اختبار HL لتحديد تفضيلك الحالي</h1>
+
+            <div class="subtitle">
+                لأن البشر متغيرون ولا أدري لماذا.
+            </div>
+        </header>
+
+        <div id="quiz">
+
+            <div class="note">
+                <strong>ملاحظة مهمة:</strong>
+                هذا الاختبار للمتعة فقط. لا يكشف مسارك الحقيقي ولا يتنبأ بمستقبلك،
+                بل يحاول إظهار تفضيلاتك الحالية.
+                يمكنك تغييرها لاحقًا، لأن البشر قرروا ألا يكونوا ثابتين.
+            </div>
+
+            <div class="progress-info">
+                <span id="counter">السؤال 1 من 30</span>
+                <span id="percent">0%</span>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+
+            <div id="questionBox"></div>
+
+            <div class="navigation">
+                <button type="button" class="nav-btn previous" id="previousBtn">
+                    السابق
+                </button>
+
+                <button type="button" class="nav-btn next" id="nextBtn">
+                    التالي
+                </button>
+            </div>
+
+        </div>
+
+
+        <div id="result" class="result">
+
+            <div class="result-emoji" id="resultEmoji">✨</div>
+
+            <h2 id="resultTitle">نتيجتك</h2>
+
+            <div class="result-description" id="resultDescription"></div>
+
+            <div class="scores" id="scores"></div>
+
+            <div class="disclaimer">
+                النتيجة لا تعني أنك تنتمين إلى نوع واحد بشكل دائم.
+                هي فقط انعكاس تقريبي لما تميلين إليه الآن.
+                البشر يتغيرون، بشكل مزعج ومثير للاهتمام في الوقت نفسه.
+            </div>
+
+            <button type="button" class="restart" id="restartBtn">
+                إعادة الاختبار
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+"use strict";
+
+
+/* ================================
+   أنواع النتائج
+================================ */
+
+const types = {
+
+    creative: {
+        name: "صانعة الأفكار",
+        emoji: "🎨",
+        description:
+            "تميلين إلى الإبداع وصناعة الأشياء والتعبير عن نفسك بطريقة خاصة بك. " +
+            "غالبًا لا يكفيك أن تعرفي الفكرة، بل تريدين أن تحوليها إلى شيء موجود فعلًا."
+    },
+
+    explore: {
+        name: "المستكشفة",
+        emoji: "🔭",
+        description:
+            "يميل فضولك إلى التجربة والمجهول واكتشاف الأشياء بنفسك. " +
+            "الطريق غير المعروف قد يكون بالنسبة لك أكثر إثارة من الطريق المضمون."
+    },
+
+    knowledge: {
+        name: "الباحثة",
+        emoji: "🧠",
+        description:
+            "تحبين الفهم والبحث ومعرفة السبب وراء الأشياء. " +
+            "المعلومة بالنسبة لك ليست مجرد معلومة، بل بداية لسؤال آخر غالبًا."
+    },
+
+    freedom: {
+        name: "الحرة",
+        emoji: "🪽",
+        description:
+            "تقدّرين الاستقلال واختيار طريقك بنفسك. " +
+            "لا تحبين أن يقرر الآخرون عنك، وتميلين إلى بناء حياة تشبهك أنت."
+    },
+
+    stability: {
+        name: "صانعة الاستقرار",
+        emoji: "🏡",
+        description:
+            "تميلين إلى الأمان والتنظيم والاستقرار. " +
+            "تحبين أن تعرفي أين تقفين وما الخطوة التالية بدل القفز إلى المجهول بلا خطة."
+    },
+
+    social: {
+        name: "الواصلة",
+        emoji: "🤝",
+        description:
+            "العلاقات والتواصل مع الآخرين جزء مهم من طريقة تفكيرك. " +
+            "تميلين إلى مشاركة الأفكار والمشاعر، وتقدرين وجود أشخاص تثقين بهم حولك."
+    }
+
+};
+
+
+/* ================================
+   الأسئلة
+================================ */
+
+const questions = [
+
+    {
+        question: "تخيلي أنك وصلتِ إلى مدينة مجهولة تمامًا. ماذا تفعلين أولًا؟",
+        options: [
+            ["أبحث عن مكان آمن وأرتب وضعي أولًا.", "stability"],
+            ["أبدأ باستكشاف المدينة ومعرفة ما الموجود فيها.", "explore"],
+            ["أبحث عن معلومات عن المدينة وتاريخها وكيف وصلت إلى ما هي عليه.", "knowledge"],
+            ["أحاول التعرف على أشخاص والتحدث معهم.", "social"]
+        ]
+    },
+
+    {
+        question: "لديك غرفة فارغة تمامًا. كيف تستخدمينها؟",
+        options: [
+            ["أحولها إلى مكان للرسم والكتابة وصناعة الأشياء.", "creative"],
+            ["أجعلها مرتبة ومريحة ومنظمة.", "stability"],
+            ["أضع فيها أشياء غريبة وأجرب أفكارًا جديدة.", "explore"],
+            ["أجعلها مكانًا أجتمع فيه مع أصدقائي.", "social"]
+        ]
+    },
+
+    {
+        question: "جاءتك فكرة مشروع غريبة جدًا. ماذا تفعلين؟",
+        options: [
+            ["أبدأ بتنفيذها فورًا وأرى إلى أين تصل.", "creative"],
+            ["أبحث عنها وأحاول معرفة إن كان أحد فعل شيئًا مشابهًا.", "knowledge"],
+            ["أكتب خطة كاملة قبل أن أبدأ.", "stability"],
+            ["أعرضها على شخص أثق به لأسمع رأيه.", "social"]
+        ]
+    },
+
+    {
+        question: "لديك أسبوع كامل بلا مسؤوليات. كيف تقضينه؟",
+        options: [
+            ["أتعلم شيئًا جديدًا.", "knowledge"],
+            ["أبدأ مشروعًا إبداعيًا.", "creative"],
+            ["أذهب إلى أماكن جديدة وأجرب أشياء مختلفة.", "explore"],
+            ["أرتاح وأقضي الوقت مع الأشخاص الذين أحبهم.", "social"]
+        ]
+    },
+
+    {
+        question: "وجدتِ بابًا مكتوبًا عليه: «لا تفتح». ماذا تفعلين؟",
+        options: [
+            ["أفتحه، لأن الآن تحديدًا أصبحت أريد معرفة ما خلفه.", "explore"],
+            ["أفحص الباب وأبحث عن معلومات قبل أن أقرر.", "knowledge"],
+            ["لا أفتحه. التحذير موجود لسبب.", "stability"],
+            ["أبحث عن شخص آخر وأفتحه معه.", "social"]
+        ]
+    },
+
+    {
+        question: "فشلتِ في شيء كنتِ تريدينه. ماذا تفعلين؟",
+        options: [
+            ["أحاول مرة أخرى بطريقة مختلفة.", "explore"],
+            ["أبحث عن سبب الفشل وأحلله.", "knowledge"],
+            ["أتركه وأجرب شيئًا آخر.", "freedom"],
+            ["أتكلم مع شخص أثق به.", "social"]
+        ]
+    },
+
+    {
+        question: "ما الشيء الذي يزعجك أكثر؟",
+        options: [
+            ["أن يمنعني أحد من اختيار طريقي.", "freedom"],
+            ["أن أعيش بدون أن أتعلم شيئًا.", "knowledge"],
+            ["أن أعيش بلا إبداع أو مساحة للتعبير.", "creative"],
+            ["أن أفقد الاستقرار والأمان.", "stability"]
+        ]
+    },
+
+    {
+        question: "حصلتِ على مبلغ كبير بشكل مفاجئ. ماذا تفعلين به؟",
+        options: [
+            ["أشتري أدوات لمشروع أو هواية أحبها.", "creative"],
+            ["أسافر وأجرب أشياء جديدة.", "explore"],
+            ["أدفعه في تعليم أو تدريب مفيد.", "knowledge"],
+            ["أستخدمه لتأمين حياتي ومستقبلي.", "stability"]
+        ]
+    },
+
+    {
+        question: "واجهتِ مشكلة معقدة جدًا. ما أسلوبك؟",
+        options: [
+            ["أجرب حلولًا مختلفة حتى أجد شيئًا يعمل.", "explore"],
+            ["أبحث وأقرأ وأجمع المعلومات.", "knowledge"],
+            ["أضع خطة واضحة خطوة بخطوة.", "stability"],
+            ["أسأل شخصًا أثق به عن رأيه.", "social"]
+        ]
+    },
+
+    {
+        question: "لو كان بإمكانك الحصول على قدرة واحدة، ماذا تختارين؟",
+        options: [
+            ["أن أصنع أي شيء أتخيله.", "creative"],
+            ["أن أذهب إلى أي مكان أريده.", "explore"],
+            ["أن أعرف إجابة أي سؤال.", "knowledge"],
+            ["أن أختار طريقي في الحياة دون أن يفرضه أحد علي.", "freedom"]
+        ]
+    },
+
+    {
+        question: "وجدتِ خريطة قديمة لمكان غير معروف. ماذا تفعلين؟",
+        options: [
+            ["أذهب إلى المكان وأكتشفه.", "explore"],
+            ["أبحث عن تاريخ الخريطة والمكان.", "knowledge"],
+            ["أخطط للرحلة بالتفصيل.", "stability"],
+            ["أبحث عن شخص يرافقني.", "social"]
+        ]
+    },
+
+    {
+        question: "أمامك صندوق مغلق ولا تعرفين ما بداخله.",
+        options: [
+            ["أفتحه فورًا.", "explore"],
+            ["أبحث عن معلومات عنه أولًا.", "knowledge"],
+            ["أتركه حتى أشعر أن الوقت مناسب.", "stability"],
+            ["أعطيه لشخص آخر ليقرر ماذا يفعل.", "freedom"]
+        ]
+    },
+
+    {
+        question: "أمامك دفتر فارغ تمامًا. ماذا تكتبين فيه؟",
+        options: [
+            ["أفكاري وقصصي.", "creative"],
+            ["الأشياء التي أتعلمها.", "knowledge"],
+            ["خططي وأهدافي.", "stability"],
+            ["أرسم أي شيء يخطر في بالي.", "creative"]
+        ]
+    },
+
+    {
+        question: "عُرضت عليكِ مهارة جديدة لتتعلميها مجانًا. ماذا تختارين؟",
+        options: [
+            ["مهارة إبداعية.", "creative"],
+            ["مهارة علمية أو تقنية.", "knowledge"],
+            ["مهارة عملية تفيدني في المستقبل.", "stability"],
+            ["شيئًا لم أجربه من قبل.", "explore"]
+        ]
+    },
+
+    {
+        question: "لديك يوم كامل في مدينة جديدة. ماذا تفعلين؟",
+        options: [
+            ["أزور الأماكن المشهورة وأتجول.", "explore"],
+            ["أزور المتاحف والأماكن التاريخية.", "knowledge"],
+            ["أضع جدولًا مرتبًا لليوم.", "stability"],
+            ["أقضي اليوم مع شخص آخر.", "social"]
+        ]
+    },
+
+    {
+        question: "اكتشفتِ أن لديك موهبة غير متوقعة. ماذا تفعلين؟",
+        options: [
+            ["أطورها وأحاول استخدامها.", "creative"],
+            ["أبحث عن طرق للاستفادة منها.", "knowledge"],
+            ["أجرب أشياء مرتبطة بها.", "explore"],
+            ["أخبر شخصًا قريبًا مني.", "social"]
+        ]
+    },
+
+    {
+        question: "أنتِ ضمن مشروع جماعي. ما الدور الذي تميلين إليه؟",
+        options: [
+            ["طرح الأفكار الجديدة.", "creative"],
+            ["البحث عن أفضل طريقة للعمل.", "knowledge"],
+            ["تنظيم الفريق والمهام.", "stability"],
+            ["التأكد من أن الجميع متفاهم.", "social"]
+        ]
+    },
+
+    {
+        question: "أمامك خيار بين حياة مستقرة تمامًا وحياة مجهولة.",
+        options: [
+            ["أختار الاستقرار.", "stability"],
+            ["أختار المجهول.", "explore"],
+            ["أحاول الجمع بين الاثنين.", "freedom"],
+            ["أختار ما يناسبني في تلك اللحظة.", "freedom"]
+        ]
+    },
+
+    {
+        question: "سمعتِ معلومة غريبة جدًا. ماذا تفعلين؟",
+        options: [
+            ["أبحث عن مصدرها وأتأكد منها.", "knowledge"],
+            ["أبحث أكثر لأعرف التفاصيل.", "explore"],
+            ["أرسلها لصديق.", "social"],
+            ["أتجاهلها إذا لم تكن مهمة بالنسبة لي.", "freedom"]
+        ]
+    },
+
+    {
+        question: "لو كان بإمكانك بناء شيء من الصفر، ماذا تختارين؟",
+        options: [
+            ["عمل فني أو قصة.", "creative"],
+            ["جهاز أو اختراع.", "knowledge"],
+            ["مشروع تجاري أو شخصي خاص بي.", "freedom"],
+            ["مكان يجمع الناس.", "social"]
+        ]
+    },
+
+    {
+        question: "عندما تواجهين مشكلة شخصية، ماذا تفعلين غالبًا؟",
+        options: [
+            ["أجلس وحدي وأفكر فيها.", "freedom"],
+            ["أبحث عن تجارب مشابهة وكيف تعامل الآخرون معها.", "knowledge"],
+            ["أتكلم مع شخص أثق به.", "social"],
+            ["أهدأ أولًا ثم أقرر ماذا أفعل.", "stability"]
+        ]
+    },
+
+    {
+        question: "لو اضطررتِ لقضاء شهر كامل في مكان واحد، ماذا تختارين؟",
+        options: [
+            ["مكان طبيعي بعيد عن الضوضاء.", "freedom"],
+            ["مدينة مليئة بالثقافة والأماكن الجديدة.", "explore"],
+            ["مكان مناسب للدراسة والعمل.", "knowledge"],
+            ["مكان أكون فيه مع الأشخاص المقربين.", "social"]
+        ]
+    },
+
+    {
+        question: "أعطوك مهمة وقالوا لك: لديك حرية كاملة في طريقة تنفيذها.",
+        options: [
+            ["أبتكر طريقة مختلفة تمامًا.", "creative"],
+            ["أبحث عن الطريقة الأكثر كفاءة.", "knowledge"],
+            ["أضع نظامًا واضحًا وأسير عليه.", "stability"],
+            ["أسأل الآخرين عن أفكارهم.", "social"]
+        ]
+    },
+
+    {
+        question: "دخلتِ مختبرًا مليئًا بالأجهزة. ماذا تفعلين؟",
+        options: [
+            ["أصنع وأجرب شيئًا بنفسي.", "creative"],
+            ["أبحث وأدرس كيف تعمل الأجهزة.", "knowledge"],
+            ["أتعلم استخدام الأجهزة بطريقة صحيحة.", "knowledge"],
+            ["أجرب الأشياء الغريبة لأرى ماذا يحدث.", "explore"]
+        ]
+    },
+
+    {
+        question: "شخص انتقد فكرة تحبينها. كيف تتعاملين مع الأمر؟",
+        options: [
+            ["أسمع النقد وأرى إن كان صحيحًا.", "knowledge"],
+            ["أشرح لماذا أؤمن بفكرتي.", "freedom"],
+            ["أعدل الفكرة إذا كان اقتراحه أفضل.", "creative"],
+            ["أشكره وأكمل طريقي.", "stability"]
+        ]
+    },
+
+    {
+        question: "لو كنتِ في فريق، أي دور تفضلين؟",
+        options: [
+            ["ابتكار الأفكار.", "creative"],
+            ["البحث وجمع المعلومات.", "knowledge"],
+            ["تنظيم العمل.", "stability
