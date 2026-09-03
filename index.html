@@ -721,4 +721,475 @@ const questions = [
         options: [
             ["ابتكار الأفكار.", "creative"],
             ["البحث وجمع المعلومات.", "knowledge"],
-            ["تنظيم العمل.", "stability
+         
+            ["تنظيم العمل.", "stability"],
+            ["التواصل بين أعضاء الفريق.", "social"]
+        ]
+    },
+
+    {
+        question: "وجدتِ مكانًا جميلًا ومجهولًا. ماذا تفعلين؟",
+        options: [
+            ["أصوره وأكتب عنه أو أرسمه.", "creative"],
+            ["أبحث عن تاريخه.", "knowledge"],
+            ["أحتفظ به لنفسي.", "freedom"],
+            ["أخبر شخصًا قريبًا مني.", "social"]
+        ]
+    },
+
+    {
+        question: "لو استطعتِ معرفة إجابة سؤال واحد عن العالم، ماذا تختارين؟",
+        options: [
+            ["كيف بدأ الكون؟", "knowledge"],
+            ["ماذا يوجد في الأماكن التي لم يستكشفها البشر؟", "explore"],
+            ["كيف يمكن للبشر تطوير حياتهم؟", "freedom"],
+            ["لماذا البشر معقدون إلى هذه الدرجة؟", "social"]
+        ]
+    },
+
+    {
+        question: "ما الشيء الذي تريدين التركيز عليه في حياتك حاليًا؟",
+        options: [
+            ["الإبداع وصناعة الأشياء.", "creative"],
+            ["التعلم والبحث.", "knowledge"],
+            ["الاستكشاف والتجارب.", "explore"],
+            ["بناء حياة مستقلة ومستقرة.", "freedom"]
+        ]
+    },
+
+    {
+        question: "غدًا حصلتِ على فرصة تبدأين بها شيئًا جديدًا تمامًا. ماذا تختارين؟",
+        options: [
+            ["مشروع أو فكرة إبداعية.", "creative"],
+            ["تجربة جديدة ومختلفة.", "explore"],
+            ["تعلم شيء أريد فهمه.", "knowledge"],
+            ["شيئًا يجعلني أكثر استقلالًا.", "freedom"]
+        ]
+    }
+
+];
+
+
+/* ================================
+   حالة الاختبار
+================================ */
+
+let currentQuestion = 0;
+
+let answers = new Array(questions.length).fill(null);
+
+
+/* ================================
+   العناصر
+================================ */
+
+const questionBox = document.getElementById("questionBox");
+const counter = document.getElementById("counter");
+const percent = document.getElementById("percent");
+const progress = document.getElementById("progress");
+
+const previousBtn = document.getElementById("previousBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+const quiz = document.getElementById("quiz");
+const result = document.getElementById("result");
+
+const resultEmoji = document.getElementById("resultEmoji");
+const resultTitle = document.getElementById("resultTitle");
+const resultDescription = document.getElementById("resultDescription");
+const scoresBox = document.getElementById("scores");
+
+const restartBtn = document.getElementById("restartBtn");
+
+
+/* ================================
+   رسم السؤال
+================================ */
+
+function renderQuestion() {
+
+    try {
+
+        const question = questions[currentQuestion];
+
+        if (!question) {
+            throw new Error("السؤال غير موجود.");
+        }
+
+        questionBox.innerHTML = "";
+
+        const questionElement = document.createElement("div");
+        questionElement.className = "question";
+        questionElement.textContent = question.question;
+
+        questionBox.appendChild(questionElement);
+
+
+        const optionsElement = document.createElement("div");
+        optionsElement.className = "options";
+
+
+        question.options.forEach(function(option, index) {
+
+            const button = document.createElement("button");
+
+            button.type = "button";
+            button.className = "option";
+
+            if (answers[currentQuestion] === index) {
+                button.classList.add("selected");
+            }
+
+
+            const letter = document.createElement("span");
+
+            letter.className = "letter";
+
+            letter.textContent =
+                String.fromCharCode(65 + index);
+
+
+            const text = document.createElement("span");
+
+            text.textContent = option[0];
+
+
+            button.appendChild(letter);
+            button.appendChild(text);
+
+
+            button.addEventListener("click", function() {
+
+                selectAnswer(index);
+
+            });
+
+
+            optionsElement.appendChild(button);
+
+        });
+
+
+        questionBox.appendChild(optionsElement);
+
+
+        const total = questions.length;
+
+        const percentage =
+            Math.round((currentQuestion / (total - 1)) * 100);
+
+
+        counter.textContent =
+            "السؤال " + (currentQuestion + 1) + " من " + total;
+
+
+        percent.textContent =
+            (currentQuestion === total - 1 ? 100 : percentage) + "%";
+
+
+        progress.style.width =
+            (currentQuestion === total - 1 ? 100 : percentage) + "%";
+
+
+        previousBtn.disabled =
+            currentQuestion === 0;
+
+
+        if (currentQuestion === total - 1) {
+
+            nextBtn.textContent = "إظهار النتيجة";
+
+        } else {
+
+            nextBtn.textContent = "التالي";
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        questionBox.innerHTML = `
+            <div class="error">
+                حصل خطأ أثناء تحميل السؤال.
+                <br>
+                يبدو أن JavaScript قرر أخذ إجازة بدون إذن.
+            </div>
+        `;
+
+    }
+
+}
+
+
+/* ================================
+   اختيار الإجابة
+================================ */
+
+function selectAnswer(index) {
+
+    answers[currentQuestion] = index;
+
+    renderQuestion();
+
+}
+
+
+/* ================================
+   السابق
+================================ */
+
+function previousQuestion() {
+
+    if (currentQuestion > 0) {
+
+        currentQuestion--;
+
+        renderQuestion();
+
+    }
+
+}
+
+
+/* ================================
+   التالي
+================================ */
+
+function nextQuestion() {
+
+    if (answers[currentQuestion] === null) {
+
+        alert("اختاري إجابة أولًا.");
+
+        return;
+
+    }
+
+
+    if (currentQuestion < questions.length - 1) {
+
+        currentQuestion++;
+
+        renderQuestion();
+
+    } else {
+
+        showResult();
+
+    }
+
+}
+
+
+/* ================================
+   النتيجة
+================================ */
+
+function showResult() {
+
+    const scores = {
+
+        creative: 0,
+        explore: 0,
+        knowledge: 0,
+        freedom: 0,
+        stability: 0,
+        social: 0
+
+    };
+
+
+    answers.forEach(function(answer, questionIndex) {
+
+        if (answer === null) {
+            return;
+        }
+
+        const type =
+            questions[questionIndex].options[answer][1];
+
+        scores[type]++;
+
+    });
+
+
+    let winner = "creative";
+
+
+    Object.keys(scores).forEach(function(type) {
+
+        if (scores[type] > scores[winner]) {
+
+            winner = type;
+
+        }
+
+    });
+
+
+    const winnerData = types[winner];
+
+
+    resultEmoji.textContent =
+        winnerData.emoji;
+
+
+    resultTitle.textContent =
+        "أنتِ " + winnerData.name;
+
+
+    resultDescription.textContent =
+        winnerData.description;
+
+
+    scoresBox.innerHTML = "";
+
+
+    const sortedTypes =
+        Object.keys(scores).sort(function(a, b) {
+
+            return scores[b] - scores[a];
+
+        });
+
+
+    sortedTypes.forEach(function(type) {
+
+        const row =
+            document.createElement("div");
+
+        row.className = "score-row";
+
+
+        const label =
+            document.createElement("div");
+
+        label.className = "score-label";
+
+
+        const name =
+            document.createElement("span");
+
+        name.textContent =
+            types[type].emoji + " " + types[type].name;
+
+
+        const number =
+            document.createElement("span");
+
+        number.textContent =
+            scores[type] + " / " + questions.length;
+
+
+        label.appendChild(name);
+        label.appendChild(number);
+
+
+        const bar =
+            document.createElement("div");
+
+        bar.className = "score-bar";
+
+
+        const fill =
+            document.createElement("div");
+
+        fill.className = "score-fill";
+
+
+        const width =
+            (scores[type] / questions.length) * 100;
+
+
+        fill.style.width =
+            width + "%";
+
+
+        bar.appendChild(fill);
+
+        row.appendChild(label);
+        row.appendChild(bar);
+
+        scoresBox.appendChild(row);
+
+    });
+
+
+    quiz.style.display = "none";
+
+    result.style.display = "block";
+
+
+    window.scrollTo({
+
+        top: 0,
+        behavior: "smooth"
+
+    });
+
+}
+
+
+/* ================================
+   إعادة الاختبار
+================================ */
+
+function restartQuiz() {
+
+    currentQuestion = 0;
+
+    answers =
+        new Array(questions.length).fill(null);
+
+
+    result.style.display = "none";
+
+    quiz.style.display = "block";
+
+
+    renderQuestion();
+
+
+    window.scrollTo({
+
+        top: 0,
+        behavior: "smooth"
+
+    });
+
+}
+
+
+/* ================================
+   الأحداث
+================================ */
+
+previousBtn.addEventListener(
+    "click",
+    previousQuestion
+);
+
+
+nextBtn.addEventListener(
+    "click",
+    nextQuestion
+);
+
+
+restartBtn.addEventListener(
+    "click",
+    restartQuiz
+);
+
+
+/* ================================
+   تشغيل الاختبار
+================================ */
+
+renderQuestion();
+
+</script>
+
+</body>
+</html>
